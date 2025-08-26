@@ -33,10 +33,10 @@ const Mainlayout = () => {
             </div>
  <div className='flex'>
                <div className="md:w-64 w-16 border-r h-[550px] text-base text-white bg-gray-800 border-gray-300 pt-4 flex flex-col transition-all duration-300">
-               <div className='flex py-4 px-2'>
-             <input type="text"  className='border w-5/6 border-gray-300 p-2 rounded-md' placeholder='Search' />
-             <button className='border w-1/6 border-gray-300 p-2 rounded-md'><Search/></button>
-           </div>
+             <div className="flex py-4 px-2 hidden md:flex">
+   <input type="text" className='border w-5/6 border-gray-300 p-2 rounded-md' placeholder='Search' />
+  <button className='border w-1/6 border-gray-300 p-2 rounded-md'><Search/></button>
+</div>
                {sidebarLinks.map((item, index) => (
     <Link 
         to={item.path} 
