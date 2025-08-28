@@ -32,7 +32,7 @@ const Mainlayout = () => {
                 </div>
             </div>
  <div className='flex'>
-               <div className="md:w-64 w-16 border-r h-[550px] text-base text-white bg-gray-800 border-gray-300 pt-4 flex flex-col transition-all duration-300">
+               <div className="md:w-64  w-16 border-r h-[100vh] text-base text-white bg-gray-800 border-gray-300 pt-4 flex flex-col transition-all duration-300">
              <div className="flex py-4 px-2 hidden md:flex">
    <input type="text" className='border w-5/6 border-gray-300 p-2 rounded-md' placeholder='Search' />
   <button className='border w-1/6 border-gray-300 p-2 rounded-md'><Search/></button>
@@ -41,7 +41,7 @@ const Mainlayout = () => {
     <Link 
         to={item.path} 
         key={index}
-        className={`flex items-center py-2 px-4 gap-3 border-l-4 border-transparent
+        className={`flex items-center md:py-2 md:px-4 py-8 px-4 gap-3 border-l-4 border-transparent
             ${location.pathname === item.path ? 
                 "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500" : 
                 "text-white"
