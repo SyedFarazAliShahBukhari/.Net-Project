@@ -1,8 +1,10 @@
-import { BarChart3, DollarSign, FileText, LogOut, Search, Settings, Shield, ShoppingCart, TrendingUp, Users, Warehouse } from 'lucide-react';
+import { BarChart3, DollarSign, FileText, LogOut, Search, Settings, Shield, ShoppingCart, TrendingUp, User, Users, Warehouse } from 'lucide-react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import image from "../assets/LOGO-DOTNET-v2018.png" ;
 
 
 const Mainlayout = () => {
+    let user = localStorage.getItem("user")
     const location = useLocation();
       let navigate = useNavigate()
   function logoutHandler(){
@@ -23,39 +25,67 @@ const Mainlayout = () => {
 
     return (
         <>
-            <div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 text-white bg-gray-800 transition-all duration-300">
-                <Link to="/">
-                    <h1 className='text-4xl'>Dot Net</h1>
-                </Link>
-                <div className="flex items-center gap-5 text-gray-200">
-                    <button onClick={logoutHandler} className='border rounded-full text-white text-sm px-4 py-1'><LogOut/></button>
-                </div>
-            </div>
- <div className='flex'>
-               <div className="md:w-64  w-16 border-r h-[100vh] text-base text-white bg-gray-800 border-gray-300 pt-4 flex flex-col transition-all duration-300">
-             <div className="flex py-4 px-2 hidden md:flex">
-   <input type="text" className='border w-5/6 border-gray-300 p-2 rounded-md' placeholder='Search' />
-  <button className='border w-1/6 border-gray-300 p-2 rounded-md'><Search/></button>
+    <div className="flex flex-col h-screen">
+  {/* Navbar */}
+  <div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 text-white bg-gray-800 transition-all duration-300">
+    <div className="flex items-center gap-4">
+      <Link to="/" className="flex items-center">
+        <img src={image} className="h-8 w-auto md:h-10 lg:h-12 object-contain" alt="Dotnet" />
+      </Link>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={logoutHandler}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-1 rounded-md transition"
+        >
+          Logout
+        </button>
+        <div className="flex items-center gap-2">
+          <User className="text-white" />
+          <span className="hidden sm:block">{user}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div className="flex flex-1 overflow-hidden">
+  
+    <div className="md:w-64 w-20 border-r h-full text-base text-white bg-gray-800 border-gray-300 pt-4 flex flex-col transition-all duration-300">
+      <div className="flex py-4 px-2 hidden md:flex">
+        <input
+          type="text"
+          className="border w-5/6 text-white placeholder-white border-gray-300 p-2 rounded-md text-black"
+          placeholder="Search"
+        />
+        <button className="border w-1/6 border-gray-300 p-2 rounded-md bg-indigo-600 hover:bg-indigo-700 transition">
+          <Search />
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {sidebarLinks.map((item, index) => (
+          <Link
+            to={item.path}
+            key={index}
+            className={`flex items-center md:py-2 md:px-4 py-6 px-2 gap-3 border-l-4 border-transparent hover:bg-gray-700 transition
+              ${
+                location.pathname === item.path
+                  ? "bg-indigo-500/10 border-indigo-500 text-indigo-500"
+                  : "text-white"
+              }`}
+          >
+            {item.icon}
+            <p className="md:block hidden">{item.name}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+
+    <div className="flex-1 overflow-auto p-4 bg-gray-100">
+      <Outlet />
+    </div>
+  </div>
 </div>
-               {sidebarLinks.map((item, index) => (
-    <Link 
-        to={item.path} 
-        key={index}
-        className={`flex items-center md:py-2 md:px-4 py-8 px-4 gap-3 border-l-4 border-transparent
-            ${location.pathname === item.path ? 
-                "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500" : 
-                "text-white"
-            }`}
-    >
-        {item.icon}
-        <p className="md:block hidden text-center">{item.name}</p>
-    </Link>
-))}
-            </div>
-            <div>
-                <Outlet />
-            </div>
- </div>
+
         </>
     );
 };
