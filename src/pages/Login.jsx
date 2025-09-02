@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const Login = () => {
   const [name, setName] = useState('');
@@ -16,48 +17,50 @@ const Login = () => {
   }, []);
 
   // Function to authenticate user
-const submitHandler = async (e) => {
-  e.preventDefault();
+  const submitHandler = async (e) => {
+    e.preventDefault();
 
-  if (!email || !password) {
-    toast.error('Required fields are missing!');
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const response = await fetch('http://184.168.123.131:8085/api/Auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: email,
-        password: password,
-      }),
-    });
-
-    console.log('Response status:', response.status);
-
-    const data = await response.json();
-    console.log('API Response:', data);
-
-    if (response.ok && (data.success || data.token)) {
-      toast.success(`Welcome ${email}`);
-      localStorage.setItem('isLogin', true);
-      localStorage.setItem('user', email);
-      navigate('/');
-    } else {
-      toast.error(data.message || 'Invalid username or password!');
+    if (!email || !password) {
+      toast.error('Required fields are missing!');
+      return;
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    toast.error('Unable to connect to server!');
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        'http://184.168.123.131:8085/api/Auth/login',
+        {
+          username: email,
+          password: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('API Response:', response.data);
+
+      if (response.status === 200) {
+        toast.success(`Welcome ${email}`);
+        localStorage.setItem('isLogin', true);
+        localStorage.setItem('user', email);
+        navigate('/');
+      } else {
+        toast.error(response.data.message || 'Invalid username or password!');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      if (error.response) {
+        toast.error(error.response.data.message || 'Invalid username or password!');
+      } else {
+        toast.error('Unable to connect to server!');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -96,8 +99,6 @@ const submitHandler = async (e) => {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-wide">
             LOGIN
           </h1>
-
-     
 
           <input
             value={email}
