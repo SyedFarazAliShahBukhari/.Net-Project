@@ -1,43 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-   let navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const [animate, setAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     setAnimate(true);
   }, []);
 
- function submitHandler(e){
-        e.preventDefault()
-        if(!name || !email || !password){
-            toast.error("required field are missing!")
-        }else{
-          toast.success(`Welcome ${name}`)
-          navigate("/")
-          localStorage.setItem("isLogin", true)
-          localStorage.setItem("user", name)
-        }
+  // Function to authenticate user
+const submitHandler = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    toast.error('Required fields are missing!');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await fetch('http://184.168.123.131:8085/api/Auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: email,
+        password: password,
+      }),
+    });
+
+    console.log('Response status:', response.status);
+
+    const data = await response.json();
+    console.log('API Response:', data);
+
+    if (response.ok && (data.success || data.token)) {
+      toast.success(`Welcome ${email}`);
+      localStorage.setItem('isLogin', true);
+      localStorage.setItem('user', email);
+      navigate('/');
+    } else {
+      toast.error(data.message || 'Invalid username or password!');
     }
+  } catch (error) {
+    console.error('Login error:', error);
+    toast.error('Unable to connect to server!');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <>
       <style>
         {`
           @keyframes fadeScaleIn {
-            0% {
-              opacity: 0;
-              transform: scale(0.95);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
           }
           .fade-scale-in {
             animation: fadeScaleIn 0.5s ease forwards;
@@ -61,28 +89,20 @@ const Login = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4">
         <form
           onSubmit={submitHandler}
-          className={`p-6 sm:p-8 md:p-10 flex flex-col items-center bg-gray-800 gap-5 text-white shadow-[15px_15px_15px_rgba(128,128,128,0.5)] rounded-xl text-center max-w-md w-full
-            ${animate ? 'fade-scale-in' : ''}
-          `}
-          action="submit"
+          className={`p-6 sm:p-8 md:p-10 flex flex-col items-center bg-gray-800 gap-5 text-white shadow-[15px_15px_15px_rgba(128,128,128,0.5)] rounded-xl text-center max-w-md w-full ${
+            animate ? 'fade-scale-in' : ''
+          }`}
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-wide">
             LOGIN
           </h1>
 
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border text-white border-gray-300 p-3 rounded-md w-full text-gray-900 placeholder-gray-500 text-base sm:text-lg md:text-xl"
-            placeholder="Enter Your Name"
-            type="text"
-            required
-          />
+     
 
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border  text-white border-gray-300 p-3 rounded-md w-full text-gray-900 placeholder-gray-500 text-base sm:text-lg md:text-xl"
+            className="border text-white border-gray-300 p-3 rounded-md w-full placeholder-gray-500 text-base sm:text-lg md:text-xl"
             placeholder="Enter Your Email"
             type="email"
             required
@@ -91,13 +111,12 @@ const Login = () => {
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border  text-white border-gray-300 p-3 rounded-md w-full text-gray-900 placeholder-gray-500 text-base sm:text-lg md:text-xl"
+            className="border text-white border-gray-300 p-3 rounded-md w-full placeholder-gray-500 text-base sm:text-lg md:text-xl"
             placeholder="Enter Your Password"
-            type={showPassword ? 'text' : 'password'} // toggle type here
+            type={showPassword ? 'text' : 'password'}
             required
           />
 
-          {/* Show Password toggle */}
           <label className="self-start flex items-center gap-2 text-gray-300 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -110,9 +129,12 @@ const Login = () => {
 
           <button
             type="submit"
-            className="btn-animate w-full p-3 rounded-md bg-white text-black font-semibold text-lg sm:text-xl md:text-2xl cursor-pointer"
+            disabled={loading}
+            className={`btn-animate w-full p-3 rounded-md bg-white text-black font-semibold text-lg sm:text-xl md:text-2xl cursor-pointer ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            Submit
+            {loading ? 'Logging in...' : 'Submit'}
           </button>
         </form>
       </div>
@@ -121,4 +143,3 @@ const Login = () => {
 };
 
 export default Login;
-
